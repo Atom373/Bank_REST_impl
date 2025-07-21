@@ -3,6 +3,8 @@ package com.example.bankcards.entity;
 import com.example.bankcards.enums.BlockRequestStatus;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,8 +18,10 @@ public class CardBlockRequest {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 	
-	Long cardToBlockId;
-	BlockRequestStatus status;
+	private Long cardToBlockId;
+	
+	@Enumerated(EnumType.STRING)
+	private BlockRequestStatus status;
 }

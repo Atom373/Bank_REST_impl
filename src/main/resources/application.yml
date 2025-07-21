@@ -2,8 +2,11 @@ server:
   port: 8090
 
 jwt:
-  lifetime: T30M // 30 minutes
+  lifetime: PT30M # 30 minutes
   secret: ${BC_JWT_SECRET:lkjdf-pe9KJ0hkm1fls-L7K-la4IWlajPO0WE}
+
+admin:
+  email: admin@gmail.com
 
 spring:
   application:
@@ -18,6 +21,8 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
+    hibernate:
+      ddl-auto: validate
   sql:
     init:
       mode: always

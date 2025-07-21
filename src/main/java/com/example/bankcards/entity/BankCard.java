@@ -6,9 +6,12 @@ import java.time.LocalDate;
 import com.example.bankcards.enums.CardStatus;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -19,12 +22,19 @@ public class BankCard {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 	
-	String maskedPan;
-	String encryptedPan;
-	User owner;
-	LocalDate expirationDate;
-	CardStatus status;
-	BigDecimal balance;
+	private String maskedPan;
+	
+	private String encryptedPan;
+	
+	@ManyToOne
+	private User owner;
+	
+	private LocalDate expirationDate;
+	
+	@Enumerated(EnumType.STRING)
+	private CardStatus status;
+	
+	private BigDecimal balance;
 }

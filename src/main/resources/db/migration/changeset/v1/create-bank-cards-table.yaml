@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: create-bank-card-table
+      id: create-bank-cards-table
       author: Atom
       changes:
         - createTable:
@@ -14,13 +14,13 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: maskedPan
+                  name: masked_pan
                   type: varchar(20)
               - column:
-                  name: encryptedPan
+                  name: encrypted_pan
                   type: varchar(100)
               - column:
-                  name: user_id
+                  name: owner_id
                   type: bigint
                   constraints: 
                     nullabe: false
@@ -36,7 +36,7 @@ databaseChangeLog:
         - addForeignKeyConstraint:
             baseTableName: bank_cards
             baseColumnNames:
-              - user_id
+              - owner_id
             constraintName: fk_card_user
             referencedTableName: users
             referencedColumnNames:

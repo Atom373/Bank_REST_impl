@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.example.bankcards.enums.UserRole;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,11 +27,14 @@ public class User implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 	
-	final String email;
-	final String password;
-	final UserRole role;
+	private final String email;
+	
+	private final String password;
+	
+	@Enumerated(EnumType.STRING)
+	private final UserRole role;
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
