@@ -1,6 +1,10 @@
 server:
   port: 8090
 
+jwt:
+  lifetime: T30M // 30 minutes
+  secret: ${BC_JWT_SECRET:lkjdf-pe9KJ0hkm1fls-L7K-la4IWlajPO0WE}
+
 spring:
   application:
     name: bank-rest-api
