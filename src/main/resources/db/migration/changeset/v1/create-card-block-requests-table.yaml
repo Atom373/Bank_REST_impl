@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-card-block-requests-table
+      author: Atom
+      changes:
+        - createTable:
+            tableName: card_block_requests
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: card_to_block_id
+                  type: bigint
+              - column:
+                  name: status
+                  type: varchar(20)

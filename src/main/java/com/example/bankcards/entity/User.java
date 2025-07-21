@@ -13,10 +13,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
 @Entity 
+@Table(name = "users")
 public class User implements UserDetails {
 
 	private static final long serialVersionUID = 9031666402270000326L;

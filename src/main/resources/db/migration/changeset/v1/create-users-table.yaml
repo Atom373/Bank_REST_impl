@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-table
+      author: Atom
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(60)
+              - column:
+                  name: password
+                  type: varchar(255)

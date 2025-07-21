@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-bank-card-table
+      author: Atom
+      changes:
+        - createTable:
+            tableName: bank_cards
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: maskedPan
+                  type: varchar(20)
+              - column:
+                  name: encryptedPan
+                  type: varchar(100)
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints: 
+                    nullabe: false
+              - column:
+                  name: expiration_date
+                  type: date 
+              - column:
+                  name: status
+                  type: varchar(20)
+              - column:
+                  name: balance
+                  type: decimal(10, 2) 
+        - addForeignKeyConstraint:
+            baseTableName: bank_cards
+            baseColumnNames:
+              - user_id
+            constraintName: fk_card_user
+            referencedTableName: users
+            referencedColumnNames:
+              - id
+            onDelete: CASCADE         
