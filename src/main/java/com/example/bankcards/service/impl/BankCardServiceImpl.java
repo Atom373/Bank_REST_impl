@@ -1,6 +1,7 @@
 package com.example.bankcards.service.impl;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,11 @@ public class BankCardServiceImpl implements BankCardService {
 	private final BankCardRepository cardRepository;
 	private final BankCardUtils cardUtils;
 	private final PanEncryptor cardEncryptor;
+	
+	@Override
+	public List<BankCard> getAll() {
+		return cardRepository.findAll();
+	}
 	
 	@Override
 	public BankCard save(BankCard card) {
