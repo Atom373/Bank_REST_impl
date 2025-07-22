@@ -28,11 +28,10 @@ public class AdminInitializer implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		if (userRepository.existsByEmail(adminEmail))
 			return;
-		User admin = new User(
-				adminEmail, 
-				passwordEncoder.encode(adminPassword), 
-				UserRole.ROLE_ADMIN
-		);
+		User admin = new User();
+		admin.setEmail(adminEmail);
+		admin.setPassword(passwordEncoder.encode(adminPassword));
+		admin.setRole(UserRole.ROLE_ADMIN);
 		userRepository.save(admin);
 	}
 

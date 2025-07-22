@@ -22,12 +22,6 @@ public class AuthController {
 
 	private final AuthenticationServiceFacade authenticationService;
 	
-	@GetMapping("/test")
-	public String test(@AuthenticationPrincipal Long userId) {
-		System.out.println(SecurityContextHolder.getContext().getAuthentication());
-		return "Secured test message for user(id=%s)".formatted(userId);
-	}
-	
 	@PostMapping
 	public ResponseEntity<?> authenticate(@RequestBody AuthRequest request) {
 		String jwt = authenticationService.authenticate(request);

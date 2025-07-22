@@ -9,7 +9,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.bankcards.exception.InvalidJwtException;
 import com.example.bankcards.util.JwtUtils;
 
 import io.jsonwebtoken.Claims;
@@ -45,7 +44,7 @@ public class JwtRequestFilter extends OncePerRequestFilter{
 				userId = claims.get("id", Long.class);
 				role = claims.get("role", String.class);
 			} catch (SignatureException | ExpiredJwtException ex) {
-				throw new InvalidJwtException("Error during jwt parsing: " + ex.getMessage());
+				log.info("Error during jwt parsing: " + ex.getMessage());
 			}
 		}
 		

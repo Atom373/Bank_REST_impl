@@ -23,8 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @Entity 
 @Table(name = "users")
-@RequiredArgsConstructor
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 public class User implements UserDetails {
 
 	private static final long serialVersionUID = 9031666402270000326L;
@@ -33,12 +32,12 @@ public class User implements UserDetails {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	private final String email;
+	private String email;
 	
-	private final String password;
+	private String password;
 	
 	@Enumerated(EnumType.STRING)
-	private final UserRole role;
+	private UserRole role;
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
