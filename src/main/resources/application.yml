@@ -13,6 +13,10 @@ logging:
     root: INFO
     com.example.bankcards: DEBUG	
 
+card:
+  encryption:
+    secret: ${BC_CARD_ENCRYPTION_SECRET:lelasd-aldiwmfif}
+
 spring:
   application:
     name: bank-rest-api
