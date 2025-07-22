@@ -20,26 +20,28 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter{
 
-	private JwtUtils jwtUtil;
+	private JwtUtils jwtUtils;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 				throws ServletException, IOException {
-		String authHeader = request.getHeader("Authorization");
 		
 		String jwt  = null;
 		Long userId = null;
 		String role = null;
 		
-		if (authHeader != null && authHeader.startsWith("Bearer ")) {
-			jwt = authHeader.substring(7);
+		jwt = jwtUtils.extractTokenFromRequest(request);
+		
+		if (jwt != null) {
 			try {
-				Claims claims = jwtUtil.getClaimsFromToken(jwt);
+				Claims claims = jwtUtils.getClaimsFromToken(jwt);
 				userId = claims.get("id", Long.class);
 				role = claims.get("role", String.class);
 			} catch (SignatureException | ExpiredJwtException ex) {
@@ -47,6 +49,7 @@ public class JwtRequestFilter extends OncePerRequestFilter{
 			}
 		}
 		
+		log.debug(jwt);
 		if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
 					userId, 

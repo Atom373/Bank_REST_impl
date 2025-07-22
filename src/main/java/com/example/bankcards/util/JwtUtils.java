@@ -13,10 +13,9 @@ import com.example.bankcards.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import lombok.Getter;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
-@Getter
 public class JwtUtils {
 	
 	@Value("${jwt.secret}")
@@ -24,6 +23,13 @@ public class JwtUtils {
 	
 	@Value("${jwt.lifetime}")
 	private Duration lifetime;
+	
+	public String extractTokenFromRequest(HttpServletRequest request) {
+		String authHeader = request.getHeader("Authorization");
+		if (authHeader == null || !authHeader.startsWith("Bearer "))
+			return null;
+		return authHeader.substring(7);
+	}
 	
 	public String generateToken(Long id, UserRole role) {
 		Map<String, Object> claims = new HashMap<>();
@@ -48,4 +54,5 @@ public class JwtUtils {
 				.parseClaimsJws(token)
 				.getBody();
 	}
+
 }

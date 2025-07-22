@@ -17,10 +17,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity 
 @Table(name = "users")
+@RequiredArgsConstructor
+@NoArgsConstructor(force = true)
 public class User implements UserDetails {
 
 	private static final long serialVersionUID = 9031666402270000326L;

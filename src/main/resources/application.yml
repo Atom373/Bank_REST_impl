@@ -8,6 +8,11 @@ jwt:
 admin:
   email: admin@gmail.com
 
+logging:
+  level:
+    root: INFO
+    com.example.bankcards: DEBUG	
+
 spring:
   application:
     name: bank-rest-api
@@ -15,7 +20,7 @@ spring:
     enabled: true
     change-log: classpath:db/migration/db.changelog-master.yaml        
   datasource:
-    url: jdbc:postgresql://${BC_DATABASE_HOST:localhost}:${BC_DATABASE_PORT:5000}/${BC_DATABASE_NAME:bcms}
+    url: jdbc:postgresql://${BC_DATABASE_HOST:localhost}:${BC_DATABASE_PORT:5432}/${BC_DATABASE_NAME:bcms}
     username: ${BC_DATABASE_USERNAME:postgres}
     password: ${BC_DATABASE_PASSWORD:1234}
     driver-class-name: org.postgresql.Driver
