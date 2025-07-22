@@ -1,9 +1,5 @@
 package com.example.bankcards.controller;
 
-import java.util.Map;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.bankcards.controller.payload.AuthRequest;
 import com.example.bankcards.dto.AuthResponse;
 import com.example.bankcards.service.AuthenticationServiceFacade;
-import com.example.bankcards.util.JwtUtils;
 
 import lombok.RequiredArgsConstructor;
 
