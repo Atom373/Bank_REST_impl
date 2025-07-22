@@ -11,7 +11,7 @@ public interface BankCardService {
 	
 	BankCard save(BankCard card);
 	
-	void updateStatus(BankCard card, CardStatus status);
+	void updateStatus(Long cardId, CardStatus status);
 	
 	void deleteById(Long id);
 }

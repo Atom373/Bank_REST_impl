@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.bankcards.entity.BankCard;
 import com.example.bankcards.enums.CardStatus;
+import com.example.bankcards.exception.CardNotFoudException;
 import com.example.bankcards.repository.BankCardRepository;
 import com.example.bankcards.service.BankCardService;
 import com.example.bankcards.util.PanEncryptor;
@@ -46,9 +47,13 @@ public class BankCardServiceImpl implements BankCardService {
 	}
 
 	@Override
-	public void updateStatus(BankCard card, CardStatus status) {
-		// TODO Auto-generated method stub
-
+	public void updateStatus(Long cardId, CardStatus status) {
+		BankCard card = cardRepository.findById(cardId)
+				.orElseThrow(
+						() -> new CardNotFoudException("Card with id = %s not found".formatted(cardId))
+				);
+		card.setStatus(status);
+		cardRepository.save(card);
 	}
 
 	@Override
