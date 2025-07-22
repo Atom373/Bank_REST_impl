@@ -58,8 +58,7 @@ public class BankCardServiceImpl implements BankCardService {
 
 	@Override
 	public void deleteById(Long id) {
-		// TODO Auto-generated method stub
-
+		cardRepository.deleteById(id);
 	}
 
 }
