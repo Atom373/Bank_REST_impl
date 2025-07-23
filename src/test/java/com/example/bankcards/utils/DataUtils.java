@@ -23,6 +23,7 @@ public class DataUtils {
 		User u = new User();
 		u.setId(1L);
 		u.setEmail("admin@gmail.com");
+		u.setPassword("encoded");
 		u.setRole(UserRole.ROLE_ADMIN);
 		return u;
 	}
@@ -31,7 +32,15 @@ public class DataUtils {
 		User u = new User();
 		u.setId(2L);
 		u.setEmail("bob@gmail.com");
+		u.setPassword("encoded");
 		u.setRole(UserRole.ROLE_USER);
+		return u;
+	}
+	
+	public static User getUserForSaving() {
+		User u = new User();
+		u.setEmail("bob@gmail.com");
+		u.setPassword("password");
 		return u;
 	}
 
@@ -61,4 +70,5 @@ public class DataUtils {
 		
 		return card;
 	}
+
 }
