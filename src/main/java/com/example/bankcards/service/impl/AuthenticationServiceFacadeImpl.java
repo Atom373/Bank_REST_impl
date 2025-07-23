@@ -32,7 +32,7 @@ public class AuthenticationServiceFacadeImpl implements AuthenticationServiceFac
 						request.password()
 				)
 		); 	
-		User user = userService.findByEmail(request.email());
+		User user = userService.getByEmail(request.email());
 		String jwt = jwtUtils.generateToken(user.getId(), user.getRole());
 		return jwt;
 	}

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.bankcards.entity.CardBlockRequest;
 import com.example.bankcards.enums.BlockRequestStatus;
+import com.example.bankcards.exception.CardBlockRequestNotFoundException;
 import com.example.bankcards.repository.CardBlockRequestRepository;
 import com.example.bankcards.service.CardBlockRequestService;
 
@@ -23,7 +24,7 @@ public class CardBlockRequestServiceImpl implements CardBlockRequestService {
 	}
 
 	@Override
-	public List<CardBlockRequest> getByStatus(BlockRequestStatus status) {
+	public List<CardBlockRequest> getAllByStatus(BlockRequestStatus status) {
 		return this.getAll()
 					.stream()
 					.filter(req -> req.getStatus() == status)
@@ -35,6 +36,15 @@ public class CardBlockRequestServiceImpl implements CardBlockRequestService {
 		CardBlockRequest request = new CardBlockRequest();
 		request.setCardToBlockId(cardToBlockId);
 		request.setStatus(BlockRequestStatus.WAITING);
+		cardBlockRequestRepository.save(request);
+	}
+
+	@Override
+	public void updateStatus(Long id, BlockRequestStatus stasus) {
+		CardBlockRequest request = cardBlockRequestRepository.findById(id).orElseThrow(
+				() -> new CardBlockRequestNotFoundException("Block request not found")
+		);
+		request.setStatus(stasus);
 		cardBlockRequestRepository.save(request);
 	}
 

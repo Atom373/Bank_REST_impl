@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<?> insufficientRights(IllegalArgumentException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Incorrect query parameter value");
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid query parameter value");
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)

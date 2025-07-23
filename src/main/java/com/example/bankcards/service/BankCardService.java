@@ -2,6 +2,9 @@ package com.example.bankcards.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.example.bankcards.controller.payload.TransactionRequest;
 import com.example.bankcards.dto.RevealedCardInfoDto;
 import com.example.bankcards.entity.BankCard;
@@ -12,6 +15,8 @@ public interface BankCardService {
 	List<BankCard> getAll();
 	
 	List<BankCard> getAllByOwnerId(Long id); 
+	
+	Page<BankCard> getAllByOwnerId(Long id, Pageable pageable); 
 	
 	BankCard getById(Long cardId, Long userId);
 	

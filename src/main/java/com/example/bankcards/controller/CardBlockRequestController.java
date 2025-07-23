@@ -24,19 +24,25 @@ public class CardBlockRequestController {
 	
 	private final CardBlockRequestService cardBlockRequestService; 
 
+	@PostMapping("/cards/{cardId}/block-requests")
+	@ResponseStatus(HttpStatus.CREATED)
+	public void createBlockRequest(@PathVariable Long cardId) {
+		cardBlockRequestService.createRequest(cardId);
+	}
+	
 	@GetMapping("/admin/block-requests")
 	public List<CardBlockRequest> getBlockRequests(@RequestParam(required = false) String status) {
 		if (status == null) {
 			return cardBlockRequestService.getAll();
 		} 
-		return cardBlockRequestService.getByStatus(
+		return cardBlockRequestService.getAllByStatus(
 				BlockRequestStatus.valueOf(status.toUpperCase())
 		);
 	}
 	
-	@PostMapping("/cards/{cardId}/block-requests")
-	@ResponseStatus(HttpStatus.CREATED)
-	public void createBlockRequest(@PathVariable Long cardId) {
-		cardBlockRequestService.createRequest(cardId);
+	@PostMapping("/admin/block-requests/{id}/processed")
+	@ResponseStatus(HttpStatus.OK)
+	public void setStatus(@PathVariable Long id) {
+		cardBlockRequestService.updateStatus(id, BlockRequestStatus.PROCESSED);
 	}
 }

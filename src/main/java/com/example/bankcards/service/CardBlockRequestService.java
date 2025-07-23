@@ -9,7 +9,9 @@ public interface CardBlockRequestService {
 
 	List<CardBlockRequest> getAll();
 	
-	List<CardBlockRequest> getByStatus(BlockRequestStatus stasus);
+	List<CardBlockRequest> getAllByStatus(BlockRequestStatus stasus);
 	
 	void createRequest(Long cardTiBlockId);
+	
+	void updateStatus(Long id, BlockRequestStatus stasus);
 }

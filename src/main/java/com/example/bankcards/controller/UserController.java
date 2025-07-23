@@ -3,6 +3,7 @@ package com.example.bankcards.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,12 +34,19 @@ public class UserController {
 	private final UserMapper userMapper;
 	
 	@GetMapping
-	public List<UserDto> getAllUsers() {
-		return userService
-					.findAll()
-					.stream()
-					.map(userMapper::toDto)
-					.toList();
+	public ResponseEntity<?> getAllUsers(@RequestParam(required = false) Integer page,
+	        						 	 @RequestParam(required = false) Integer size) {
+		if (page == null || size == null) {
+			List<UserDto> users = userService.getAll()
+											 .stream()
+											 .map(userMapper::toDto)
+											 .toList();
+			return ResponseEntity.ok(Map.of("content", users));
+		}
+		return ResponseEntity.ok(
+				userService.getAll(PageRequest.of(page, size))
+							.map(userMapper::toDto)
+		);
 	}
 	
 	@PostMapping

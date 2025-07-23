@@ -1,7 +1,9 @@
 package com.example.bankcards.controller;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,8 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.example.bankcards.controller.payload.BankCardCreateRequest;
 import com.example.bankcards.controller.payload.RevealCardInfoRequest;
 import com.example.bankcards.controller.payload.TransactionRequest;
@@ -37,12 +41,20 @@ public class BankCardController {
 	private final DetailedBankCardMapper detailedCardMapper;
 
 	@GetMapping("/cards")
-	public List<BankCardDto> getUserCards(@AuthenticationPrincipal Long userId) {
-		return cardService
-					.getAllByOwnerId(userId)
-					.stream()
-					.map(cardMapper::toDto)
-					.toList();
+	public ResponseEntity<?> getUserCards(@RequestParam(required = false) Integer page,
+		 	 							  @RequestParam(required = false) Integer size,
+		 	 							  @AuthenticationPrincipal Long userId) {
+		if (page == null || size == null) {
+			List<BankCardDto> cards = cardService.getAllByOwnerId(userId)
+												 .stream()
+												 .map(cardMapper::toDto)
+												 .toList();
+			return ResponseEntity.ok(Map.of("content", cards));
+		}
+		return ResponseEntity.ok(
+				cardService.getAllByOwnerId(userId, PageRequest.of(page, size))
+							.map(cardMapper::toDto)
+		);
 	}
 	
 	@GetMapping("/cards/{cardId}")
