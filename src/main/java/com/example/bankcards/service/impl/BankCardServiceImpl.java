@@ -15,6 +15,7 @@ import com.example.bankcards.entity.BankCard;
 import com.example.bankcards.enums.CardStatus;
 import com.example.bankcards.exception.CardBlockedOrExpiredException;
 import com.example.bankcards.exception.CardNotFoudException;
+import com.example.bankcards.exception.InsufficientFundsException;
 import com.example.bankcards.exception.InsufficientRightsException;
 import com.example.bankcards.repository.BankCardRepository;
 import com.example.bankcards.service.BankCardService;
@@ -123,12 +124,14 @@ public class BankCardServiceImpl implements BankCardService {
 			);
 		
 		if (!(securityUtils.cardBelogsToUser(fromCard, userId)
-			&& securityUtils.cardBelogsToUser(toCard, userId))) {
+			&& securityUtils.cardBelogsToUser(toCard, userId)))
 			throw new InsufficientRightsException("User can only do transfers between his own cards");
-		}
 		
 		BigDecimal fromCardBalance = fromCard.getBalance();
 		BigDecimal toCardBalance = toCard.getBalance();
+		
+		if (fromCardBalance.compareTo(request.amount()) < 0)
+			throw new InsufficientFundsException("Not enough funds for the transfer");
 		
 		fromCard.setBalance(fromCardBalance.subtract(request.amount()));
 		toCard.setBalance(toCardBalance.add(request.amount()));
