@@ -13,6 +13,7 @@ import com.example.bankcards.controller.payload.TransactionRequest;
 import com.example.bankcards.dto.RevealedCardInfoDto;
 import com.example.bankcards.entity.BankCard;
 import com.example.bankcards.enums.CardStatus;
+import com.example.bankcards.exception.CardBlockedOrExpiredException;
 import com.example.bankcards.exception.CardNotFoudException;
 import com.example.bankcards.exception.InsufficientRightsException;
 import com.example.bankcards.repository.BankCardRepository;
@@ -110,6 +111,16 @@ public class BankCardServiceImpl implements BankCardService {
 	public void transfer(TransactionRequest request, Long userId) {	
 		BankCard fromCard = this.getByPan(request.fromCardPan());
 		BankCard toCard = this.getByPan(request.toCardPan());
+		
+		if (fromCard.getStatus() != CardStatus.ACTIVE)
+			throw new CardBlockedOrExpiredException(
+					"User is trying to transfer money from a blocked or expired card"
+			);
+		
+		if (toCard.getStatus() != CardStatus.ACTIVE)
+			throw new CardBlockedOrExpiredException(
+					"User is trying to transfer money to a blocked or expired card"
+			);
 		
 		if (!(securityUtils.cardBelogsToUser(fromCard, userId)
 			&& securityUtils.cardBelogsToUser(toCard, userId))) {

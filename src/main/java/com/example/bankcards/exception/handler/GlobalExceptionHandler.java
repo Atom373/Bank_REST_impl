@@ -1,5 +1,6 @@
 package com.example.bankcards.exception.handler;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,13 +18,25 @@ import com.example.bankcards.exception.AppException;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(AppException.class)
-	public ResponseEntity<?> insufficientRights(AppException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	public ResponseEntity<?> defaultHandler(AppException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+				Map.of(
+						"status_code", 400,
+						"error_message", ex.getMessage(),
+						"timestamp", LocalDateTime.now()
+				)
+		);
 	}
 	
 	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<?> insufficientRights(IllegalArgumentException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid query parameter value");
+	public ResponseEntity<?> invalidQueryParameter(IllegalArgumentException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+				Map.of(
+						"status_code", 400,
+						"error_message", "Invalid query parameter value",
+						"timestamp", LocalDateTime.now()
+				)
+		);
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
