@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.bankcards.controller.payload.BankCardCreateRequest;
 import com.example.bankcards.controller.payload.RevealCardInfoRequest;
+import com.example.bankcards.controller.payload.TransactionRequest;
 import com.example.bankcards.dto.BankCardDto;
 import com.example.bankcards.dto.DetailedBankCardDto;
 import com.example.bankcards.dto.RevealedCardInfoDto;
@@ -57,6 +58,13 @@ public class BankCardController {
 										 @RequestBody RevealCardInfoRequest request) {
 		return cardService.revealCardInfo(cardId, userId, request.password());
 	}	
+	
+	@PostMapping("/cards/transfer")
+	@ResponseStatus(HttpStatus.OK)
+	public void transfer(@AuthenticationPrincipal Long userId,
+			 			 @RequestBody TransactionRequest request) {
+		cardService.transfer(request, userId);
+	}
 	
 	@GetMapping("/admin/cards")
 	public List<BankCardDto> getAllCards() {

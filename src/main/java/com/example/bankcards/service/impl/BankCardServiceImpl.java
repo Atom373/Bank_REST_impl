@@ -1,10 +1,13 @@
 package com.example.bankcards.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.bankcards.controller.payload.TransactionRequest;
 import com.example.bankcards.dto.RevealedCardInfoDto;
 import com.example.bankcards.entity.BankCard;
 import com.example.bankcards.enums.CardStatus;
@@ -56,6 +59,8 @@ public class BankCardServiceImpl implements BankCardService {
 	
 	@Override
 	public RevealedCardInfoDto revealCardInfo(Long cardId, Long userId, String password) {
+		log.info("User(id=%s) requested full card info for card(id=%s)".formatted(userId, cardId));
+		
 		BankCard card = this.getById(cardId, userId);
 		
 		if (!securityUtils.passwordsMatch(card.getOwner(), password)) {
@@ -64,6 +69,8 @@ public class BankCardServiceImpl implements BankCardService {
 		
 		String pan = panEncryptor.decrypt(card.getEncryptedPan());
 		String expirationDate = dateFormatUtils.format(card.getExpirationDate());
+		
+		log.info("User(id=%s) got access to full card info for card(id=%s)".formatted(userId, cardId));
 		
 		return new RevealedCardInfoDto(pan, expirationDate);
 	}
@@ -90,10 +97,40 @@ public class BankCardServiceImpl implements BankCardService {
 		card.setStatus(status);
 		cardRepository.save(card);
 	}
+	
+	@Override
+	@Transactional
+	public void transfer(TransactionRequest request, Long userId) {	
+		BankCard fromCard = this.getByPan(request.fromCardPan());
+		BankCard toCard = this.getByPan(request.toCardPan());
+		
+		if (!(securityUtils.cardBelogsToUser(fromCard, userId)
+			&& securityUtils.cardBelogsToUser(toCard, userId))) {
+			throw new InsufficientRightsException("User can only do transfers between his own cards");
+		}
+		
+		BigDecimal fromCardBalance = fromCard.getBalance();
+		BigDecimal toCardBalance = toCard.getBalance();
+		
+		fromCard.setBalance(fromCardBalance.subtract(request.amount()));
+		toCard.setBalance(toCardBalance.add(request.amount()));
+		
+		cardRepository.save(fromCard);
+		cardRepository.save(toCard);
+		
+		log.info("Transaction completed. From pan = %s to pan = %s with amount = %s"
+				.formatted(fromCard.getMaskedPan(), toCard.getMaskedPan(), request.amount()));
+	}
 
 	@Override
 	public void deleteById(Long id) {
 		cardRepository.deleteById(id);
 	}
 
+	private BankCard getByPan(String pan) {
+		String encryptedPan = panEncryptor.encrypt(pan);
+		return cardRepository.findByEncryptedPan(encryptedPan).orElseThrow(
+				() -> new CardNotFoudException("Card with pan = %s not found".formatted(encryptedPan))
+		);
+	}
 }
