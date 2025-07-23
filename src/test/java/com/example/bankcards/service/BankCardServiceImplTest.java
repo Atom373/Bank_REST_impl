@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.bankcards.controller.payload.TransactionRequest;
 import com.example.bankcards.entity.BankCard;
+import com.example.bankcards.enums.CardStatus;
 import com.example.bankcards.exception.CardNotFoudException;
 import com.example.bankcards.exception.InsufficientFundsException;
 import com.example.bankcards.exception.InsufficientRightsException;
@@ -161,5 +162,20 @@ public class BankCardServiceImplTest {
 		assertThrows(
 				InsufficientFundsException.class,
 				() -> bankCardService.transfer(req, fromCard.getOwner().getId()));
+	}
+	
+	@Test
+	public void updateStatus_should() {
+		// given
+		BankCard card = DataUtils.getNewBankCard();
+		when(cardRepository.findById(anyLong())).thenReturn(Optional.of(card));
+		when(cardRepository.save(any(BankCard.class))).thenReturn(null);
+		
+		// when
+		bankCardService.updateStatus(card.getId(), CardStatus.BLOCKED);
+		
+		// then
+		verify(cardRepository, times(1)).findById(card.getId());
+		verify(cardRepository, times(1)).save(any(BankCard.class));
 	}
 }

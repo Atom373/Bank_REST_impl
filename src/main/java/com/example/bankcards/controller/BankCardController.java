@@ -65,9 +65,9 @@ public class BankCardController {
 	}	
 	
 	@PostMapping("/cards/{cardId}/reveal")
-	public RevealedCardInfoDto revealPan(@PathVariable Long cardId,
-										 @AuthenticationPrincipal Long userId,
-										 @RequestBody RevealCardInfoRequest request) {
+	public RevealedCardInfoDto revealCardInfo(@PathVariable Long cardId,
+											  @AuthenticationPrincipal Long userId,
+											  @RequestBody RevealCardInfoRequest request) {
 		return cardService.revealCardInfo(cardId, userId, request.password());
 	}	
 	
@@ -90,7 +90,8 @@ public class BankCardController {
 	@PostMapping("/admin/cards")
 	public ResponseEntity<?> createNewCard(@RequestBody BankCardCreateRequest request) {
 		BankCard card = cardService.save(cardMapper.toEntity(request));
-		return ResponseEntity.ok(cardMapper.toDto(card));
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(cardMapper.toDto(card));
 	}
 	
 	@PostMapping("/admin/cards/{id}/block")
