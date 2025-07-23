@@ -2,6 +2,7 @@ package com.example.bankcards.service;
 
 import java.util.List;
 
+import com.example.bankcards.dto.RevealedCardInfoDto;
 import com.example.bankcards.entity.BankCard;
 import com.example.bankcards.enums.CardStatus;
 
@@ -11,7 +12,9 @@ public interface BankCardService {
 	
 	List<BankCard> getAllByOwnerId(Long id); 
 	
-	BankCard getById(Long Id);
+	BankCard getById(Long cardId, Long userId);
+	
+	RevealedCardInfoDto revealCardInfo(Long id, Long userId, String password);
 	
 	BankCard save(BankCard card);
 	

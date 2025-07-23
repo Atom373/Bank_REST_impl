@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.bankcards.admin.AdminInitializer;
 import com.example.bankcards.controller.payload.BankCardCreateRequest;
+import com.example.bankcards.controller.payload.RevealCardInfoRequest;
 import com.example.bankcards.dto.BankCardDto;
 import com.example.bankcards.dto.DetailedBankCardDto;
+import com.example.bankcards.dto.RevealedCardInfoDto;
 import com.example.bankcards.entity.BankCard;
 import com.example.bankcards.enums.CardStatus;
 import com.example.bankcards.mapper.BankCardMapper;
@@ -41,11 +42,20 @@ public class BankCardController {
 					.stream()
 					.map(cardMapper::toDto)
 					.toList();
+	}
+	
+	@GetMapping("/cards/{cardId}")
+	public DetailedBankCardDto getCardById(@PathVariable Long cardId,
+										   @AuthenticationPrincipal Long userId) {
+		BankCard card = cardService.getById(cardId, userId);
+		return detailedCardMapper.toDto(card);
 	}	
 	
-	@GetMapping("/cards/{id}")
-	public DetailedBankCardDto getCardById(@PathVariable Long id) {
-		return detailedCardMapper.toDto(cardService.getById(id));
+	@PostMapping("/cards/{cardId}/reveal")
+	public RevealedCardInfoDto revealPan(@PathVariable Long cardId,
+										 @AuthenticationPrincipal Long userId,
+										 @RequestBody RevealCardInfoRequest request) {
+		return cardService.revealCardInfo(cardId, userId, request.password());
 	}	
 	
 	@GetMapping("/admin/cards")

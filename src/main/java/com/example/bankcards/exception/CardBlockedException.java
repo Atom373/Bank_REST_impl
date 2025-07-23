@@ -1,6 +1,6 @@
 package com.example.bankcards.exception;
 
-public class CardBlockedException extends RuntimeException {
+public class CardBlockedException extends AppException {
 
 	public CardBlockedException(String msg) {
 		super(msg);

@@ -11,19 +11,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.example.bankcards.exception.UserAlreadyExistsException;
-import com.example.bankcards.exception.UserNotFoundException;
+import com.example.bankcards.exception.AppException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(UserNotFoundException.class)
-	public ResponseEntity<?> userNotFound(UserNotFoundException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-	}
-
-	@ExceptionHandler(UserAlreadyExistsException.class)
-	public ResponseEntity<?> userAlreadyExists(UserAlreadyExistsException ex) {
+	@ExceptionHandler(AppException.class)
+	public ResponseEntity<?> insufficientRights(AppException ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 	}
 	
