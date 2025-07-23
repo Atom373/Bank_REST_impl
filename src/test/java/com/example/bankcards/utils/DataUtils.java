@@ -44,6 +44,13 @@ public class DataUtils {
 		return u;
 	}
 
+	public static List<User> getUserList() {
+		List<User> users = new ArrayList<>();
+		users.add(getAdmin());
+		users.add(getUser());
+		return users;
+	}
+	
 	public static List<BankCard> getCardList() {
 		List<BankCard> cards = new ArrayList<>();
 		cards.add(getNewBankCard());
