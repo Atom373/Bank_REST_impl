@@ -9,6 +9,8 @@ public interface BankCardService {
 
 	List<BankCard> getAll();
 	
+	List<BankCard> getAllByOwnerId(Long id); 
+	
 	BankCard save(BankCard card);
 	
 	void updateStatus(Long cardId, CardStatus status);

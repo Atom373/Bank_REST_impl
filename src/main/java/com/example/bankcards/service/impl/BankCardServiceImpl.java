@@ -33,6 +33,11 @@ public class BankCardServiceImpl implements BankCardService {
 	}
 	
 	@Override
+	public List<BankCard> getAllByOwnerId(Long id) {
+		return cardRepository.findAllByOwnerId(id);
+	}
+	
+	@Override
 	public BankCard save(BankCard card) {
 		String pan = cardUtils.generatePan();
 		
