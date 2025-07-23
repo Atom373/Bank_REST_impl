@@ -15,10 +15,10 @@ import com.example.bankcards.exception.CardNotFoudException;
 import com.example.bankcards.exception.InsufficientRightsException;
 import com.example.bankcards.repository.BankCardRepository;
 import com.example.bankcards.service.BankCardService;
-import com.example.bankcards.util.PanEncryptor;
-import com.example.bankcards.util.SecurityUtils;
 import com.example.bankcards.util.BankCardUtils;
 import com.example.bankcards.util.DateFormatUtils;
+import com.example.bankcards.util.PanEncryptor;
+import com.example.bankcards.util.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -130,7 +130,7 @@ public class BankCardServiceImpl implements BankCardService {
 	private BankCard getByPan(String pan) {
 		String encryptedPan = panEncryptor.encrypt(pan);
 		return cardRepository.findByEncryptedPan(encryptedPan).orElseThrow(
-				() -> new CardNotFoudException("Card with pan = %s not found".formatted(encryptedPan))
+				() -> new CardNotFoudException("Card with provided pan not found")
 		);
 	}
 }

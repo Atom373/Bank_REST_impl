@@ -1,7 +1,10 @@
 package com.example.bankcards.entity;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.example.bankcards.enums.BlockRequestStatus;
-import com.example.bankcards.enums.UserRole;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,7 +16,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
@@ -30,4 +32,7 @@ public class CardBlockRequest {
 	
 	@Enumerated(EnumType.STRING)
 	private BlockRequestStatus status;
+	
+	@CreationTimestamp
+	private LocalDateTime created_at;
 }
