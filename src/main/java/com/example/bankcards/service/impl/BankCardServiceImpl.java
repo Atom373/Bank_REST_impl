@@ -38,6 +38,13 @@ public class BankCardServiceImpl implements BankCardService {
 	}
 	
 	@Override
+	public BankCard getById(Long id) {
+		return cardRepository.findById(id).orElseThrow(
+					() -> new CardNotFoudException("Card with id = %s not found".formatted(id))
+			);
+	}
+	
+	@Override
 	public BankCard save(BankCard card) {
 		String pan = cardUtils.generatePan();
 		
@@ -52,10 +59,9 @@ public class BankCardServiceImpl implements BankCardService {
 	}
 
 	@Override
-	public void updateStatus(Long cardId, CardStatus status) {
-		BankCard card = cardRepository.findById(cardId)
-				.orElseThrow(
-						() -> new CardNotFoudException("Card with id = %s not found".formatted(cardId))
+	public void updateStatus(Long id, CardStatus status) {
+		BankCard card = cardRepository.findById(id).orElseThrow(
+						() -> new CardNotFoudException("Card with id = %s not found".formatted(id))
 				);
 		card.setStatus(status);
 		cardRepository.save(card);

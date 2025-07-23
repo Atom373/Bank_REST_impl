@@ -6,16 +6,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class BankCardDto {
+public class DetailedBankCardDto {
 
 	private Long id;
 	
 	@JsonProperty("masked_pan")
 	private String maskedPan;
 	
-	@JsonProperty("owner_email")
-	private String ownerEmail;
-	
 	private CardStatus status;
 	
+	private String balance;
 }

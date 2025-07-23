@@ -16,6 +16,5 @@ public interface BankCardMapper {
 	BankCard toEntity(BankCardCreateRequest request);
 
 	@Mapping(target = "ownerEmail", source = "owner.email")
-	@Mapping(target = "balance", expression = "java(card.getBalance().toPlainString())")
 	BankCardDto toDto(BankCard card);
 }

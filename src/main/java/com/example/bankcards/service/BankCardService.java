@@ -11,6 +11,8 @@ public interface BankCardService {
 	
 	List<BankCard> getAllByOwnerId(Long id); 
 	
+	BankCard getById(Long Id);
+	
 	BankCard save(BankCard card);
 	
 	void updateStatus(Long cardId, CardStatus status);

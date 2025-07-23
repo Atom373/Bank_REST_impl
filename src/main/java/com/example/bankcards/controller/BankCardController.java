@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.bankcards.admin.AdminInitializer;
 import com.example.bankcards.controller.payload.BankCardCreateRequest;
 import com.example.bankcards.dto.BankCardDto;
+import com.example.bankcards.dto.DetailedBankCardDto;
 import com.example.bankcards.entity.BankCard;
 import com.example.bankcards.enums.CardStatus;
 import com.example.bankcards.mapper.BankCardMapper;
+import com.example.bankcards.mapper.DetailedBankCardMapper;
 import com.example.bankcards.service.BankCardService;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ public class BankCardController {
 	
 	private final BankCardService cardService;
 	private final BankCardMapper cardMapper;
+	private final DetailedBankCardMapper detailedCardMapper;
 
 	@GetMapping("/cards")
 	public List<BankCardDto> getUserCards(@AuthenticationPrincipal Long userId) {
@@ -38,6 +41,11 @@ public class BankCardController {
 					.stream()
 					.map(cardMapper::toDto)
 					.toList();
+	}	
+	
+	@GetMapping("/cards/{id}")
+	public DetailedBankCardDto getCardById(@PathVariable Long id) {
+		return detailedCardMapper.toDto(cardService.getById(id));
 	}	
 	
 	@GetMapping("/admin/cards")

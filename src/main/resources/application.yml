@@ -2,7 +2,7 @@ server:
   port: 8090
 
 jwt:
-  lifetime: PT30M # 30 minutes
+  lifetime: PT12H # 30 minutes
   secret: ${BC_JWT_SECRET:lkjdf-pe9KJ0hkm1fls-L7K-la4IWlajPO0WE}
 
 admin:
