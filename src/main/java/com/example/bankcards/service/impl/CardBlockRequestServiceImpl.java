@@ -19,14 +19,15 @@ public class CardBlockRequestServiceImpl implements CardBlockRequestService {
 	
 	@Override
 	public List<CardBlockRequest> getAll() {
-		// TODO Auto-generated method stub
-		return null;
+		return cardBlockRequestRepository.findAll();
 	}
 
 	@Override
-	public List<CardBlockRequest> getByStatus(BlockRequestStatus stasus) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<CardBlockRequest> getByStatus(BlockRequestStatus status) {
+		return this.getAll()
+					.stream()
+					.filter(req -> req.getStatus() == status)
+					.toList();
 	}
 
 	@Override
