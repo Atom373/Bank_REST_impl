@@ -5,7 +5,7 @@ import java.util.Random;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BankCardUtils {
+public class CardUtils {
 	
 	private static final Random random = new Random();
 

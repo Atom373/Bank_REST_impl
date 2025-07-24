@@ -5,11 +5,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.bankcards.entity.BankCard;
+import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.enums.CardStatus;
 import com.example.bankcards.enums.UserRole;
-import com.example.bankcards.util.BankCardUtils;
+import com.example.bankcards.util.CardUtils;
 
 public class DataUtils {
 	
@@ -17,7 +17,7 @@ public class DataUtils {
 	
 	private static long cardId = 0;
 	
-	private static BankCardUtils cardUtils = new BankCardUtils();
+	private static CardUtils cardUtils = new CardUtils();
 	
 	public static User getAdmin() {
 		User u = new User();
@@ -51,15 +51,15 @@ public class DataUtils {
 		return users;
 	}
 	
-	public static List<BankCard> getCardList() {
-		List<BankCard> cards = new ArrayList<>();
-		cards.add(getNewBankCard());
-		cards.add(getNewBankCard());
+	public static List<Card> getCardList() {
+		List<Card> cards = new ArrayList<>();
+		cards.add(getNewCard());
+		cards.add(getNewCard());
 		return cards;
 	}
 	
-	public static BankCard getNewBankCard() {
-		BankCard card = getCardForSaving();
+	public static Card getNewCard() {
+		Card card = getCardForSaving();
 		
 		card.setId(++cardId);
 		card.setStatus(CardStatus.ACTIVE);
@@ -69,8 +69,8 @@ public class DataUtils {
 		return card;
 	}
 	
-	public static BankCard getCardForSaving() {
-		BankCard card = new BankCard();
+	public static Card getCardForSaving() {
+		Card card = new Card();
 		
 		card.setOwner(getUser());
 		card.setBalance(new BigDecimal("100.00"));

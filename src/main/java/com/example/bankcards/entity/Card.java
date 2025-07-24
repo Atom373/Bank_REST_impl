@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor()
 @Table(name = "bank_cards")
-public class BankCard {
+public class Card {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

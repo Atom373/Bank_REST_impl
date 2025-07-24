@@ -3,7 +3,7 @@ package com.example.bankcards.util;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.example.bankcards.entity.BankCard;
+import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ public class SecurityUtils {
 	
 	private final PasswordEncoder passwordEncoder;
 
-	public boolean cardBelogsToUser(BankCard card, Long userId) {
+	public boolean cardBelogsToUser(Card card, Long userId) {
 		return card.getOwner().getId() == userId;
 	}
 	

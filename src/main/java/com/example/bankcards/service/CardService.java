@@ -7,22 +7,22 @@ import org.springframework.data.domain.Pageable;
 
 import com.example.bankcards.controller.payload.TransactionRequest;
 import com.example.bankcards.dto.RevealedCardInfoDto;
-import com.example.bankcards.entity.BankCard;
+import com.example.bankcards.entity.Card;
 import com.example.bankcards.enums.CardStatus;
 
-public interface BankCardService {
+public interface CardService {
 
-	List<BankCard> getAll();
+	List<Card> getAll();
 	
-	List<BankCard> getAllByOwnerId(Long id); 
+	List<Card> getAllByOwnerId(Long id); 
 	
-	Page<BankCard> getAllByOwnerId(Long id, Pageable pageable); 
+	Page<Card> getAllByOwnerId(Long id, Pageable pageable); 
 	
-	BankCard getById(Long cardId, Long userId);
+	Card getById(Long cardId, Long userId);
 	
 	RevealedCardInfoDto revealCardInfo(Long id, Long userId, String password);
 	
-	BankCard save(BankCard card);
+	Card save(Card card);
 	
 	void updateStatus(Long cardId, CardStatus status);
 	

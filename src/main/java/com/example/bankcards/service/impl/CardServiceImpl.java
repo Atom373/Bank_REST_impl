@@ -11,15 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.bankcards.controller.payload.TransactionRequest;
 import com.example.bankcards.dto.RevealedCardInfoDto;
-import com.example.bankcards.entity.BankCard;
+import com.example.bankcards.entity.Card;
 import com.example.bankcards.enums.CardStatus;
 import com.example.bankcards.exception.CardBlockedOrExpiredException;
 import com.example.bankcards.exception.CardNotFoudException;
 import com.example.bankcards.exception.InsufficientFundsException;
 import com.example.bankcards.exception.InsufficientRightsException;
-import com.example.bankcards.repository.BankCardRepository;
-import com.example.bankcards.service.BankCardService;
-import com.example.bankcards.util.BankCardUtils;
+import com.example.bankcards.repository.CardRepository;
+import com.example.bankcards.service.CardService;
+import com.example.bankcards.util.CardUtils;
 import com.example.bankcards.util.DateFormatUtils;
 import com.example.bankcards.util.PanEncryptor;
 import com.example.bankcards.util.SecurityUtils;
@@ -30,34 +30,34 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BankCardServiceImpl implements BankCardService {
+public class CardServiceImpl implements CardService {
 	
 	private static final short CARD_LIFETIME = 4; // 4 years 
 
-	private final BankCardRepository cardRepository;
-	private final BankCardUtils cardUtils;
+	private final CardRepository cardRepository;
+	private final CardUtils cardUtils;
 	private final PanEncryptor panEncryptor;
 	private final DateFormatUtils dateFormatUtils; 
 	private final SecurityUtils securityUtils;
 	
 	@Override
-	public List<BankCard> getAll() {
+	public List<Card> getAll() {
 		return cardRepository.findAll();
 	}
 	
 	@Override
-	public List<BankCard> getAllByOwnerId(Long id) {
+	public List<Card> getAllByOwnerId(Long id) {
 		return cardRepository.findAllByOwnerId(id);
 	}
 	
 	@Override
-	public Page<BankCard> getAllByOwnerId(Long id, Pageable pageable) {
+	public Page<Card> getAllByOwnerId(Long id, Pageable pageable) {
 		return cardRepository.findAllByOwnerId(id, pageable);
 	}
 	
 	@Override
-	public BankCard getById(Long cardId, Long userId) {
-		BankCard card = cardRepository.findById(cardId).orElseThrow(
+	public Card getById(Long cardId, Long userId) {
+		Card card = cardRepository.findById(cardId).orElseThrow(
 				() -> new CardNotFoudException("Card with id = %s not found".formatted(cardId))
 		);
 		if (!securityUtils.cardBelogsToUser(card, userId)) {
@@ -70,7 +70,7 @@ public class BankCardServiceImpl implements BankCardService {
 	public RevealedCardInfoDto revealCardInfo(Long cardId, Long userId, String password) {
 		log.info("User(id=%s) requested full card info for card(id=%s)".formatted(userId, cardId));
 		
-		BankCard card = this.getById(cardId, userId);
+		Card card = this.getById(cardId, userId);
 		
 		if (!securityUtils.passwordsMatch(card.getOwner(), password)) {
 			throw new InsufficientRightsException("Incorrect password");
@@ -85,7 +85,7 @@ public class BankCardServiceImpl implements BankCardService {
 	}
 	
 	@Override
-	public BankCard save(BankCard card) {
+	public Card save(Card card) {
 		String pan = cardUtils.generatePan();
 		
 		card.setMaskedPan(cardUtils.getMaskedPan(pan));
@@ -100,7 +100,7 @@ public class BankCardServiceImpl implements BankCardService {
 
 	@Override
 	public void updateStatus(Long id, CardStatus status) {
-		BankCard card = cardRepository.findById(id).orElseThrow(
+		Card card = cardRepository.findById(id).orElseThrow(
 				() -> new CardNotFoudException("Card with id = %s not found".formatted(id))
 		);
 		card.setStatus(status);
@@ -110,8 +110,8 @@ public class BankCardServiceImpl implements BankCardService {
 	@Override
 	@Transactional
 	public void transfer(TransactionRequest request, Long userId) {	
-		BankCard fromCard = this.getByPan(request.fromCardPan());
-		BankCard toCard = this.getByPan(request.toCardPan());
+		Card fromCard = this.getByPan(request.fromCardPan());
+		Card toCard = this.getByPan(request.toCardPan());
 		
 		if (fromCard.getStatus() != CardStatus.ACTIVE)
 			throw new CardBlockedOrExpiredException(
@@ -148,7 +148,7 @@ public class BankCardServiceImpl implements BankCardService {
 		cardRepository.deleteById(id);
 	}
 
-	private BankCard getByPan(String pan) {
+	private Card getByPan(String pan) {
 		String encryptedPan = panEncryptor.encrypt(pan);
 		return cardRepository.findByEncryptedPan(encryptedPan).orElseThrow(
 				() -> new CardNotFoudException("Card with provided pan not found")

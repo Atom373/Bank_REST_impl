@@ -3,18 +3,18 @@ package com.example.bankcards.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.example.bankcards.controller.payload.BankCardCreateRequest;
-import com.example.bankcards.dto.BankCardDto;
-import com.example.bankcards.entity.BankCard;
+import com.example.bankcards.controller.payload.CardCreateRequest;
+import com.example.bankcards.dto.CardDto;
+import com.example.bankcards.entity.Card;
 import com.example.bankcards.service.UserService;
 
 @Mapper(componentModel = "spring", uses = { UserService.class })
-public interface BankCardMapper {
+public interface CardMapper {
 
 	@Mapping(target = "balance", expression = "java(new java.math.BigDecimal(request.balance()))")
 	@Mapping(source = "ownerEmail", target = "owner")
-	BankCard toEntity(BankCardCreateRequest request);
+	Card toEntity(CardCreateRequest request);
 
 	@Mapping(target = "ownerEmail", source = "owner.email")
-	BankCardDto toDto(BankCard card);
+	CardDto toDto(Card card);
 }

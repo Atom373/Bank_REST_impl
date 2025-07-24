@@ -28,21 +28,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.example.bankcards.controller.payload.BankCardCreateRequest;
-import com.example.bankcards.entity.BankCard;
+import com.example.bankcards.controller.payload.CardCreateRequest;
+import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.enums.CardStatus;
-import com.example.bankcards.mapper.BankCardMapperImpl;
-import com.example.bankcards.mapper.DetailedBankCardMapperImpl;
-import com.example.bankcards.service.BankCardService;
+import com.example.bankcards.mapper.CardMapperImpl;
+import com.example.bankcards.mapper.DetailedCardMapperImpl;
+import com.example.bankcards.service.CardService;
 import com.example.bankcards.service.UserService;
 import com.example.bankcards.util.JwtUtils;
 import com.example.bankcards.utils.DataUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest(controllers = {BankCardController.class})
+@WebMvcTest(controllers = {CardController.class})
 @AutoConfigureMockMvc(addFilters = false)
-public class BankCardControllerTest {
+public class CardControllerTest {
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -51,13 +51,13 @@ public class BankCardControllerTest {
 	private ObjectMapper objectMapper;
 	
 	@MockBean
-	private BankCardService bankCardService; 
+	private CardService bankCardService; 
 	
 	@SpyBean
-    private BankCardMapperImpl cardMapper; 
+    private CardMapperImpl cardMapper; 
 	
 	@SpyBean
-	private DetailedBankCardMapperImpl detailedCardMapper;
+	private DetailedCardMapperImpl detailedCardMapper;
 
 	@MockBean
 	private UserService userService;
@@ -69,7 +69,7 @@ public class BankCardControllerTest {
 	public void getUserCards_shouldReturnAllUsersCards() throws Exception {
 		// given
 		User user = DataUtils.getUser();
-		List<BankCard> cards = DataUtils.getCardList();
+		List<Card> cards = DataUtils.getCardList();
 		when(bankCardService.getAllByOwnerId(anyLong())).thenReturn(cards);
 		
 		Authentication auth = setUpSecurityContext(user);
@@ -90,7 +90,7 @@ public class BankCardControllerTest {
 	public void getCardById_shouldReturnDetailedCardDto() throws Exception {
 		// given
 		User user = DataUtils.getUser();
-		BankCard card = DataUtils.getNewBankCard();
+		Card card = DataUtils.getNewCard();
 		when(bankCardService.getById(card.getId(), user.getId())).thenReturn(card);
 		
 		Authentication auth = setUpSecurityContext(user);
@@ -110,7 +110,7 @@ public class BankCardControllerTest {
 	public void getAllCards_shouldReturnListWithAllCards() throws Exception {
 		// given
 		User admin = DataUtils.getAdmin();
-		List<BankCard> cards = DataUtils.getCardList();
+		List<Card> cards = DataUtils.getCardList();
 		when(bankCardService.getAll()).thenReturn(cards);
 		
 		Authentication auth = setUpSecurityContext(admin);
@@ -132,10 +132,10 @@ public class BankCardControllerTest {
 		User admin = DataUtils.getAdmin();
 		User user = DataUtils.getUser();
 		
-		BankCard card = DataUtils.getNewBankCard();
-		BankCardCreateRequest request = new BankCardCreateRequest(user.getEmail(), "100.00");
+		Card card = DataUtils.getNewCard();
+		CardCreateRequest request = new CardCreateRequest(user.getEmail(), "100.00");
 		
-		when(bankCardService.save(any(BankCard.class))).thenReturn(card);
+		when(bankCardService.save(any(Card.class))).thenReturn(card);
 		
 		Authentication auth = setUpSecurityContext(admin);
 	    

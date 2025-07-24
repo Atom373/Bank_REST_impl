@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class DetailedBankCardDto {
+public class DetailedCardDto {
 
 	private Long id;
 	

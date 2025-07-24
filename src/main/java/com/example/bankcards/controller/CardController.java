@@ -17,35 +17,35 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.bankcards.controller.payload.BankCardCreateRequest;
+import com.example.bankcards.controller.payload.CardCreateRequest;
 import com.example.bankcards.controller.payload.RevealCardInfoRequest;
 import com.example.bankcards.controller.payload.TransactionRequest;
-import com.example.bankcards.dto.BankCardDto;
-import com.example.bankcards.dto.DetailedBankCardDto;
+import com.example.bankcards.dto.CardDto;
+import com.example.bankcards.dto.DetailedCardDto;
 import com.example.bankcards.dto.RevealedCardInfoDto;
-import com.example.bankcards.entity.BankCard;
+import com.example.bankcards.entity.Card;
 import com.example.bankcards.enums.CardStatus;
-import com.example.bankcards.mapper.BankCardMapper;
-import com.example.bankcards.mapper.DetailedBankCardMapper;
-import com.example.bankcards.service.BankCardService;
+import com.example.bankcards.mapper.CardMapper;
+import com.example.bankcards.mapper.DetailedCardMapper;
+import com.example.bankcards.service.CardService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-public class BankCardController {
+public class CardController {
 	
-	private final BankCardService cardService;
-	private final BankCardMapper cardMapper;
-	private final DetailedBankCardMapper detailedCardMapper;
+	private final CardService cardService;
+	private final CardMapper cardMapper;
+	private final DetailedCardMapper detailedCardMapper;
 
 	@GetMapping("/cards")
 	public ResponseEntity<?> getUserCards(@RequestParam(required = false) Integer page,
 		 	 							  @RequestParam(required = false) Integer size,
 		 	 							  @AuthenticationPrincipal Long userId) {
 		if (page == null || size == null) {
-			List<BankCardDto> cards = cardService.getAllByOwnerId(userId)
+			List<CardDto> cards = cardService.getAllByOwnerId(userId)
 												 .stream()
 												 .map(cardMapper::toDto)
 												 .toList();
@@ -58,9 +58,9 @@ public class BankCardController {
 	}
 	
 	@GetMapping("/cards/{cardId}")
-	public DetailedBankCardDto getCardById(@PathVariable Long cardId,
+	public DetailedCardDto getCardById(@PathVariable Long cardId,
 										   @AuthenticationPrincipal Long userId) {
-		BankCard card = cardService.getById(cardId, userId);
+		Card card = cardService.getById(cardId, userId);
 		return detailedCardMapper.toDto(card);
 	}	
 	
@@ -79,7 +79,7 @@ public class BankCardController {
 	}
 	
 	@GetMapping("/admin/cards")
-	public List<BankCardDto> getAllCards() {
+	public List<CardDto> getAllCards() {
 		return cardService
 					.getAll()
 					.stream()
@@ -88,8 +88,8 @@ public class BankCardController {
 	}
 	
 	@PostMapping("/admin/cards")
-	public ResponseEntity<?> createNewCard(@RequestBody BankCardCreateRequest request) {
-		BankCard card = cardService.save(cardMapper.toEntity(request));
+	public ResponseEntity<?> createNewCard(@RequestBody CardCreateRequest request) {
+		Card card = cardService.save(cardMapper.toEntity(request));
 		return ResponseEntity.status(HttpStatus.CREATED)
 				.body(cardMapper.toDto(card));
 	}
