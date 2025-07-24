@@ -1,0 +1,708 @@
+openapi: 3.0.1
+info:
+  title: Bank REST API
+  description: Bank 
+  version: 1.0.0
+security:
+  - bearerAuth: []
+servers:
+- url: http://localhost:8090/api/v1
+  description: test server
+paths:
+  /auth:
+    post:
+      summary: Authenticate user and get JWT
+      description: Authenticates a user with email and password and returns a JWT token.
+      tags:
+      - AuthController
+      operationId: authenticateUser
+      requestBody:
+        description: User authentication request.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Authentication successful. Returns JWT.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Bad Request - Invalid input or missing credentials.
+
+  /admin/users:
+    get:
+      summary: Get all users 
+      description: Retrieves a list of all users. Can be paginated. If paginated the response will also has 'pageable' field with pageNumber and pageSize fileds.
+      tags:
+      - UserController
+      operationId: getAllUsers
+      security:
+        - bearerAuth:
+            - admin # Requires 'admin' role
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+          description: The page number to retrieve (0-indexed).
+          required: false
+        - in: query
+          name: size
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+          description: The number of items per page.
+          required: false
+      responses:
+        '200':
+          description: A list of UserDto objects.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericListDto'
+        '401':
+          description: Unauthorized - Authentication required.
+
+    post:
+      summary: Create a new user 
+      description: Creates a new user and saves it in the dmbs.
+      tags:
+      - UserController 
+      operationId: createNewUser
+      security:
+        - bearerAuth:
+            - admin # Requires 'admin' role
+      requestBody:
+        description: User creation request.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '201':
+          description: User created successfully. Returns the ID of the new user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: The ID of the newly created user.
+        '400':
+          description: Bad Request - Invalid input or user with this email aready exists.
+        '401':
+          description: Unauthorized - Authentication required.
+        
+  /admin/users/{id}:
+    delete:
+      summary: Delete a user by ID 
+      description: Deletes a user from the dbms by his ID.
+      tags:
+      - UserController
+      operationId: deleteUser
+      security:
+        - bearerAuth:
+            - admin # Requires 'admin' role
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          description: The ID of the user to delete.
+          required: true
+      responses:
+        '200':
+          description: User deleted successfully.
+        '401':
+          description: Unauthorized - Authentication required.
+
+  /cards:
+    get:
+      summary: Get user's cards
+      description: Retrieves a list of cards owned by the authenticated user. Can be paginated. If paginated the response will also has 'pageable' field with pageNumber and pageSize fileds.
+      tags:
+      - CardController
+      operationId: getUserCards
+      security:
+        - bearerAuth: [] # Requires any authenticated user
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+          description: The page number to retrieve (0-indexed).
+          required: false
+        - in: query
+          name: size
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+          description: The number of items per page.
+          required: false
+      responses:
+        '200':
+          description: A list of CardDto objects for the authenticated user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericListDto'
+        '401':
+          description: Unauthorized - Authentication required.
+
+  /cards/{id}:
+    get:
+      summary: Get detailed card information by ID
+      description: Retrieves detailed information for a specific card owned by the authenticated user. Response does not contain sensitive card information such as full PAN or expiration date.
+      tags:
+      - CardController
+      operationId: getCardById
+      security:
+        - bearerAuth: [] # Requires any authenticated user
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          description: The ID of the card to retrieve.
+          required: true
+      responses:
+        '200':
+          description: Detailed information about the card.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedCardDto'
+        '401':
+          description: Unauthorized - Authentication required.
+        '403':
+          description: Forbiden - User does not own this card.
+        '404':
+          description: Not Found - Card with the specified ID does not exist for this user.
+
+  /cards/{id}/reveal:
+    post:
+      summary: Reveal sensitive card information
+      description: Reveals sensitive information (like full PAN and expiration date) for a specific card after password authentication.
+      tags:
+      - CardController
+      operationId: revealCardInfo
+      security:
+        - bearerAuth: [] # Requires any authenticated user
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          description: The ID of the card to reveal information for.
+          required: true
+      requestBody:
+        description: Request containing the password to authorize the reveal.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevealCardInfoRequest'
+      responses:
+        '200':
+          description: Revealed sensitive card information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevealedCardInfoDto'
+        '401':
+          description: Unauthorized - Authentication required or incorrect password.
+        '403':
+          description: Forbidden - User does not own this card.
+        '404':
+          description: Not Found - Card with the specified ID does not exist for this user.
+
+  /cards/transfer:
+    post:
+      summary: Transfer funds between cards
+      description: Initiates a fund transfer from one of the authenticated user's cards to another card.
+      tags:
+      - CardController
+      operationId: transfer
+      security:
+        - bearerAuth: [] # Requires any authenticated user
+      requestBody:
+        description: Transaction details for the transfer.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+      responses:
+        '200':
+          description: Funds transferred successfully.
+        '400':
+          description: Bad Request - One of the cards involved in the transfer is blocked or expired.
+        '401':
+          description: Unauthorized - Authentication required.
+        '403':
+          description: Forbidden - User does not own one of the cards.
+        '404':
+          description: Not Found - One of the cards involved in the transfer does not exist.
+
+  /admin/cards:
+    get:
+      summary: Get all cards 
+      description: Retrieves a list of all cards in the system.
+      tags:
+      - CardController
+      operationId: getAllCards
+      security:
+        - bearerAuth:
+            - admin # Requires 'admin' role
+      responses:
+        '200':
+          description: A list of CardDto objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardDto'
+        '401':
+          description: Unauthorized - Authentication required.
+
+    post:
+      summary: Create a new card 
+      description: Creates a new card in the system associated with a user.
+      tags:
+      - CardController
+      operationId: createNewCard
+      security:
+        - bearerAuth:
+            - admin # Requires 'admin' role
+      requestBody:
+        description: Card creation request.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardCreateRequest'
+      responses:
+        '201':
+          description: Card created successfully. Returns the created CardDto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardDto'
+        '400':
+          description: Bad Request - Invalid input.
+        '401':
+          description: Unauthorized - Authentication required.
+
+  /admin/cards/{id}/block:
+    post:
+      summary: Block a card 
+      description: Blocks a specific card by its ID, changing its status to BLOCKED.
+      tags:
+      - CardController
+      operationId: blockCard
+      security:
+        - bearerAuth:
+            - admin # Requires 'admin' role
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          description: The ID of the card to block.
+          required: true
+      responses:
+        '200':
+          description: Card blocked successfully.
+        '401':
+          description: Unauthorized - Authentication required.
+        '404':
+          description: Not Found - Card with the specified ID does not exist.
+
+  /admin/cards/{id}/activate:
+    post:
+      summary: Activate a card 
+      description: Activates a specific card by its ID, changing its status to ACTIVE.
+      tags:
+      - CardController
+      operationId: activateCard
+      security:
+        - bearerAuth:
+            - admin # Requires 'admin' role
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          description: The ID of the card to activate.
+          required: true
+      responses:
+        '200':
+          description: Card activated successfully.
+        '401':
+          description: Unauthorized - Authentication required.
+        '404':
+          description: Not Found - Card with the specified ID does not exist.
+
+  /admin/cards/{id}:
+    delete:
+      summary: Delete a card by ID 
+      description: Deletes a card from the system by its ID.
+      tags:
+      - CardController
+      operationId: deleteCard
+      security:
+        - bearerAuth:
+            - admin # Requires 'admin' role
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          description: The ID of the card to delete.
+          required: true
+      responses:
+        '200':
+          description: Card deleted successfully.
+        '401':
+          description: Unauthorized - Authentication required.
+
+  /cards/{id}/block-requests:
+    post:
+      summary: Create a card block request
+      description: Allows an authenticated user to create a request to block one of their cards.
+      tags:
+        - CardBlockRequestController
+      operationId: createBlockRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          description: The ID of the card to request a block for.
+          required: true
+      responses:
+        '201':
+          description: Block request created successfully.
+        '401':
+          description: Unauthorized - Authentication required.
+        '403':
+          description: Forbidden - User does not own this card.
+        '404':
+          description: Not Found - Card with the specified ID does not exist for this user.
+
+  /admin/block-requests:
+    get:
+      summary: Get all card block requests 
+      description: Retrieves a list of all card block requests. Can be filtered by status.
+      tags:
+        - CardBlockRequestController
+      operationId: getBlockRequests
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum:
+              - WAITING
+              - PROCESSED
+            description: Filter requests by status (e.g., WAITING, PROCESSED).
+          required: false
+      responses:
+        '200':
+          description: A list of card block requests.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardBlockRequest'
+        '401':
+          description: Unauthorized - Authentication required.
+
+  /admin/block-requests/{id}/processed:
+    post:
+      summary: Set block request status to PROCESSED 
+      description: Updates the status of a specific card block request to PROCESSED.
+      tags:
+        - CardBlockRequestController
+      operationId: setBlockRequestStatusProcessed
+      security:
+        - bearerAuth: [] # Requires 'bearer-key' authentication
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          description: The ID of the block request to update.
+          required: true
+      responses:
+        '200':
+          description: Block request status updated to PROCESSED successfully.
+        '401':
+          description: Unauthorized - Authentication required.
+        '404':
+          description: Not Found - Block request with the specified ID does not exist.
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+  schemas:
+    AuthRequest:
+      type: object
+      description: Request body for user authentication.
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address.
+          example: admin@gmail.com
+        password:
+          type: string
+          format: password
+          description: User's password.
+          example: 12345
+      required:
+        - email
+        - password
+
+    CardCreateRequest:
+      type: object
+      description: Request body for creating a new card.
+      properties:
+        owner_email:
+          type: string
+          format: email
+          description: The email of the user who will own this card.
+          example: user@example.com
+        balance:
+          type: string # Using string to represent BigDecimal due to potential precision issues in JSON numbers
+          description: The initial balance for the new card. Must be a non-negative decimal value.
+          example: "100.50"
+      required:
+        - owner_email
+        - balance
+
+    RevealCardInfoRequest:
+      type: object
+      description: Request body for revealing sensitive card information.
+      properties:
+        password:
+          type: string
+          format: password
+          description: The user's password to authorize the reveal.
+          example: password
+      required:
+        - password
+
+    TransactionRequest:
+      type: object
+      description: Request body for a card-to-card transaction.
+      properties:
+        from_card_pan:
+          type: string
+          description: The masked or full PAN of the source card.
+          example: "**** **** **** 1234"
+        to_card_pan:
+          type: string
+          description: The masked or full PAN of the destination card.
+          example: "**** **** **** 5678"
+        amount:
+          type: number
+          format: float # Using float for BigDecimal as per common OpenAPI practice for decimals
+          minimum: 1.00
+          description: The amount of money to transfer. Must be a non-negative decimal value.
+          example: 25.75
+      required:
+        - from_card_pan
+        - to_card_pan
+        - amount
+
+    UserCreateRequest:
+      type: object
+      description: Request body for creating a new user.
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email address of the new user.
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          description: The password for the new user.
+          minLength: 5
+          maxLength: 10
+          example: password
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      description: Response containing a JWT token for authentication.
+      properties:
+        jwt:
+          type: string
+          description: The JSON Web Token.
+      required:
+        - jwt
+
+    CardDto:
+      type: object
+      description: Represents a bank card with basic information.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier of the card.
+        masked_pan:
+          type: string
+          description: Masked Primary Account Number (e.g., **** **** **** 1234).
+        owner_email:
+          type: string
+          format: email
+          description: Email of the card owner.
+        status:
+          $ref: '#/components/schemas/CardStatus'
+      required:
+        - id
+        - masked_pan
+        - owner_email
+        - status
+
+    DetailedCardDto:
+      type: object
+      description: Provides detailed information about a card, including its balance.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier of the card.
+        masked_pan:
+          type: string
+          description: Masked Primary Account Number (e.g., **** **** **** 1234).
+        status:
+          $ref: '#/components/schemas/CardStatus'
+        balance:
+          type: string
+          description: Current balance of the card.
+      required:
+        - id
+        - masked_pan
+        - status
+        - balance
+
+    GenericListDto:
+      type: object
+      description: A generic wrapper for a list of items.
+      properties:
+        content:
+          type: array
+          description: The list of items.
+          items:
+            type: object # This will be replaced by the actual type when used in a specific context (e.g., GenericListDto<CardDto>).
+      required:
+        - content
+
+    RevealedCardInfoDto:
+      type: object
+      description: Contains sensitive, unmasked card information.
+      properties:
+        pan:
+          type: string
+          description: Full Primary Account Number.
+        expirationDate:
+          type: string
+          description: Card expiration date in MM/YY format.
+      required:
+        - pan
+        - expirationDate
+
+    UserDto:
+      type: object
+      description: Represents a user with their basic profile information.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier of the user.
+        email:
+          type: string
+          format: email
+          description: User's email address.
+      required:
+        - id
+        - email
+
+    CardStatus:
+      type: string
+      description: The status of the card.
+      enum:
+        - ACTIVE
+        - BLOCKED
+        - EXPIRED
+        
+    CardBlockRequest:
+      type: object
+      description: Represents a request to block a card.
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier of the block request.
+          readOnly: true # Usually set by the system
+        cardToBlockId:
+          type: integer
+          format: int64
+          description: The ID of the card for which the block is requested.
+        status:
+          $ref: '#/components/schemas/BlockRequestStatus'
+          description: The current status of the block request.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the block request was created.
+          readOnly: true 
+      required:
+        - id
+        - cardToBlockId
+        - status
+        - created_at
+
+    BlockRequestStatus:
+      type: string
+      description: The status of a card block request.
+      enum:
+        - WAITING
+        - PROCESSED

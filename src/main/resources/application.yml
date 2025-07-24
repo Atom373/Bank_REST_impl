@@ -18,7 +18,9 @@ app:
 logging:
   level:
     root: INFO
-    com.example.bankcards: DEBUG		
+    com.example.bankcards: DEBUG
+    org.springdoc: DEBUG
+    org.springframework.web: DEBUG		
 
 spring:
   application:
@@ -38,3 +40,7 @@ spring:
   sql:
     init:
       mode: always
+
+springdoc:
+  swagger-ui:
+    url: /openapi.yaml

@@ -55,7 +55,13 @@ public class SecurityConfig {
 				.csrf( csrf -> csrf.disable())
 				.cors(Customizer.withDefaults())
 				.authorizeHttpRequests( requests -> requests
-						.requestMatchers("/api/v1/auth").permitAll()
+						.requestMatchers(
+								"/api/v1/auth", 
+								"/v3/api-docs/**",
+				                "/swagger-ui.html",
+				                "/swagger-ui/**",
+				                "/openapi.yaml"
+							).permitAll()
 						.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 						.anyRequest().authenticated()
 				)

@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.example.bankcards.exception.AppException;
+import com.example.bankcards.exception.CardBlockRequestNotFoundException;
+import com.example.bankcards.exception.CardNotFoudException;
+import com.example.bankcards.exception.InsufficientRightsException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -34,6 +37,39 @@ public class GlobalExceptionHandler {
 				Map.of(
 						"status_code", 400,
 						"error_message", "Invalid query parameter value",
+						"timestamp", LocalDateTime.now()
+				)
+		);
+	}
+	
+	@ExceptionHandler(CardNotFoudException.class)
+	public ResponseEntity<?> cardNotFound(CardNotFoudException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+				Map.of(
+						"status_code", 404,
+						"error_message", ex.getMessage(),
+						"timestamp", LocalDateTime.now()
+				)
+		);
+	}
+	
+	@ExceptionHandler(CardBlockRequestNotFoundException.class)
+	public ResponseEntity<?> blockRequestNotFound(CardBlockRequestNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+				Map.of(
+						"status_code", 404,
+						"error_message", ex.getMessage(),
+						"timestamp", LocalDateTime.now()
+				)
+		);
+	}
+	
+	@ExceptionHandler(InsufficientRightsException.class)
+	public ResponseEntity<?> insufficientRights(InsufficientRightsException ex) {
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body( 
+				Map.of(
+						"status_code", 403,
+						"error_message", ex.getMessage(),
 						"timestamp", LocalDateTime.now()
 				)
 		);

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bankcards.controller.payload.UserCreateRequest;
+import com.example.bankcards.dto.GenericListDto;
 import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.mapper.UserMapper;
@@ -41,7 +42,8 @@ public class UserController {
 											 .stream()
 											 .map(userMapper::toDto)
 											 .toList();
-			return ResponseEntity.ok(Map.of("content", users));
+			// GenericListDto is used to ensure that both responses contain a "content" field.
+			return ResponseEntity.ok(new GenericListDto<UserDto>(users));
 		}
 		return ResponseEntity.ok(
 				userService.getAll(PageRequest.of(page, size))

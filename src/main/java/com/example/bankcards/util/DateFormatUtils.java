@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class DateFormatUtils {
 
 	public String format(LocalDate date) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/YY");
         return date.format(formatter);
 	}
 }

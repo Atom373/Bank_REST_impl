@@ -1,7 +1,6 @@
 package com.example.bankcards.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -22,6 +21,7 @@ import com.example.bankcards.controller.payload.RevealCardInfoRequest;
 import com.example.bankcards.controller.payload.TransactionRequest;
 import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.dto.DetailedCardDto;
+import com.example.bankcards.dto.GenericListDto;
 import com.example.bankcards.dto.RevealedCardInfoDto;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.enums.CardStatus;
@@ -49,7 +49,8 @@ public class CardController {
 												 .stream()
 												 .map(cardMapper::toDto)
 												 .toList();
-			return ResponseEntity.ok(Map.of("content", cards));
+			// GenericListDto is used to ensure that both responses contain a "content" field.
+			return ResponseEntity.ok(new GenericListDto<CardDto>(cards)); 
 		}
 		return ResponseEntity.ok(
 				cardService.getAllByOwnerId(userId, PageRequest.of(page, size))
