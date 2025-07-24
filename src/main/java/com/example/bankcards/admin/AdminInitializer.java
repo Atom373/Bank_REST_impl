@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminInitializer implements CommandLineRunner {
 
-	@Value("${admin.email}")
+	@Value("${app.admin.email}")
 	private String adminEmail;
 	
 	@Value("${bc.admin.password}") // Environment variable

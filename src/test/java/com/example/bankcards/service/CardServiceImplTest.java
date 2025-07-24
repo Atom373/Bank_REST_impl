@@ -165,7 +165,7 @@ public class CardServiceImplTest {
 	}
 	
 	@Test
-	public void updateStatus_should() {
+	public void updateStatus_shouldCall2RepositoryMethods() {
 		// given
 		Card card = DataUtils.getNewCard();
 		when(cardRepository.findById(anyLong())).thenReturn(Optional.of(card));

@@ -1,5 +1,7 @@
 package com.example.bankcards.util;
 
+import java.util.Base64;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -8,15 +10,13 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Base64;
-
 @Slf4j
 @Component
 public class PanEncryptor {
 	
     private static final String ALGO = "AES";
     
-    @Value("${card.encryption.secret}")
+    @Value("${app.card.encryption.secret}")
     private String secret;
 
     public String encrypt(String pan) {

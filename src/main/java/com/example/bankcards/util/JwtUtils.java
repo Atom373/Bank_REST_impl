@@ -18,10 +18,10 @@ import jakarta.servlet.http.HttpServletRequest;
 @Component
 public class JwtUtils {
 	
-	@Value("${jwt.secret}")
+	@Value("${app.jwt.secret}")
 	private String secret;
 	
-	@Value("${jwt.lifetime}")
+	@Value("${app.jwt.lifetime}")
 	private Duration lifetime;
 	
 	public String extractTokenFromRequest(HttpServletRequest request) {

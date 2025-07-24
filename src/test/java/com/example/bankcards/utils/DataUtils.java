@@ -29,9 +29,8 @@ public class DataUtils {
 	}
 	
 	public static User getUser() {
-		User u = new User();
+		User u = getUserForSaving();
 		u.setId(2L);
-		u.setEmail("bob@gmail.com");
 		u.setPassword("encoded");
 		u.setRole(UserRole.ROLE_USER);
 		return u;
@@ -47,7 +46,7 @@ public class DataUtils {
 	public static List<User> getUserList() {
 		List<User> users = new ArrayList<>();
 		users.add(getAdmin());
-		users.add(getUser());
+		users.add(getUser()); 
 		return users;
 	}
 	
